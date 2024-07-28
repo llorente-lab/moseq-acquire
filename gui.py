@@ -12,11 +12,6 @@ class App:
         self.window.title('Camera Recording')
         self.window.geometry('500x400')
 
-        icon_path = "/home/llorentelab/icon.png"  
-        icon = Image.open(icon_path)
-        icon = ImageTk.PhotoImage(icon)
-        self.window.iconphoto(True, icon)
-
         self.style = ttk.Style()
         self.style.configure('TLabel', font=('Clam', 12))
         self.style.configure('TButton', font=('Clam', 12))
