@@ -372,7 +372,7 @@ def start_recording(
 
         fps = len(system_timestamps) / (max(system_timestamps) - min(system_timestamps))
         print(f" - Session average frame rate = {fps:0.2f} fps")
-        messagebox.showinfo("showinfo", f"The recordings and information has been saved at {filename_prefix}")
+        messagebox.showinfo("Recording completed!", f"The recordings and information has been saved at {filename_prefix}")
         image_queue.put(tuple())
         write_process.join()
 
