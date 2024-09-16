@@ -7,7 +7,6 @@ import numpy as np
 from datetime import datetime
 from multiprocessing import Process, Queue
 from pyorbbecsdk import *
-import argparse
 import tkinter
 from tkinter import messagebox
 
