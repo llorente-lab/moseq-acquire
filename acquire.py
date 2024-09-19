@@ -9,7 +9,7 @@ from multiprocessing import Process, Queue
 from pyorbbecsdk import *
 import tkinter
 from tkinter import messagebox
-
+import av
 
 def display_images(display_queue: Queue, depth_height_threshold: int):
     """
@@ -217,6 +217,64 @@ def write_metadata(
         json.dump(metadata_dict, output, indent=2)
 
 
+def write_frames_pyav(filename, frames, fps=30, crf=10, pixel_format='gray', codec='libx264'):
+    container = av.open(filename, mode='w')
+    stream = container.add_stream(codec, rate=fps)
+    stream.width = frames.shape[2]
+    stream.height = frames.shape[1]
+    stream.pix_fmt = pixel_format
+    stream.options = {'crf': str(crf)}
+
+    for frame in frames:
+        av_frame = av.VideoFrame.from_ndarray(frame, format=pixel_format)
+        packet = stream.encode(av_frame)
+        container.mux(packet)
+
+    # Flush the stream
+    packet = stream.encode()
+    while packet:
+        container.mux(packet)
+        packet = stream.encode()
+
+    container.close()
+
+def write_images_pyav(image_queue, filename_prefix, save_ir=True):
+    depth_container = av.open(f"{filename_prefix}/depth.mp4", mode='w')
+    depth_stream = depth_container.add_stream('libx264', rate=30)
+    depth_stream.pix_fmt = 'gray16le'
+    depth_stream.options = {'crf': '10'}
+
+    if save_ir:
+        ir_container = av.open(f"{filename_prefix}/ir.mp4", mode='w')
+        ir_stream = ir_container.add_stream('libx264', rate=30)
+        ir_stream.pix_fmt = 'gray16le'
+        ir_stream.options = {'crf': '10'}
+
+    while True:
+        data = image_queue.get()
+        if len(data) == 0:
+            break
+        else:
+            ir, depth = data
+            depth_frame = av.VideoFrame.from_ndarray(depth, format='gray16le')
+            depth_packet = depth_stream.encode(depth_frame)
+            depth_container.mux(depth_packet)
+
+            if save_ir:
+                ir_frame = av.VideoFrame.from_ndarray(ir, format='gray16le')
+                ir_packet = ir_stream.encode(ir_frame)
+                ir_container.mux(ir_packet)
+
+    # Flush the streams
+    for packet in depth_stream.encode():
+        depth_container.mux(packet)
+    depth_container.close()
+
+    if save_ir:
+        for packet in ir_stream.encode():
+            ir_container.mux(packet)
+        ir_container.close()
+
 def start_recording(
     base_dir,
     subject_name,
@@ -256,6 +314,11 @@ def start_recording(
         args=(image_queue, filename_prefix),
         kwargs={"save_ir": save_ir},
     )
+    #write_process = Process(
+       # target=write_images_pyav,
+       # args=(image_queue, filename_prefix),
+       # kwargs={"save_ir": save_ir},
+   # )
     write_process.start()
 
     if display_frames:
