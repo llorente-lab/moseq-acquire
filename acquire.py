@@ -239,14 +239,14 @@ def write_frames_pyav(filename, frames, fps=30, crf=10, pixel_format='gray', cod
     container.close()
 
 def write_images_pyav(image_queue, filename_prefix, save_ir=True):
-    depth_container = av.open(f"{filename_prefix}/depth.mp4", mode='w')
-    depth_stream = depth_container.add_stream('libx264', rate=30)
+    depth_container = av.open(f"{filename_prefix}/depth.avi", mode='w')
+    depth_stream = depth_container.add_stream('ffv1', rate=30)
     depth_stream.pix_fmt = 'gray16le'
     depth_stream.options = {'crf': '10'}
 
     if save_ir:
-        ir_container = av.open(f"{filename_prefix}/ir.mp4", mode='w')
-        ir_stream = ir_container.add_stream('libx264', rate=30)
+        ir_container = av.open(f"{filename_prefix}/ir.avi", mode='w')
+        ir_stream = ir_container.add_stream('ffv1', rate=30)
         ir_stream.pix_fmt = 'gray16le'
         ir_stream.options = {'crf': '10'}
 
