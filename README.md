@@ -31,7 +31,7 @@ git clone https://github.com/athp18/moseq-acquire.git
 ```
 
 To run, try: 
-```python
+```bash
 cd /path/to/pyorbbecsdk
 source venv/bin/activate
 cd moseq-acquire
