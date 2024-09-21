@@ -13,6 +13,7 @@ sudo apt install git
 ## Step 2: Set up pyorbbecsdk
 ```bash
 sudo apt-get install python3-dev python3-venv python3-pip python3-opencv
+https://github.com/orbbec/pyorbbecsdk.git # in a directory of your choosing
 cd pyorbbecsdk
 python3 -m venv ./venv
 source venv/bin/activate
