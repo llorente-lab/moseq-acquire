@@ -3,73 +3,64 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import filedialog, messagebox
 from acquire import start_recording
-import os
-from PIL import Image, ImageTk
 
 class App:
     def __init__(self):
         self.window = ttk.Window(themename="darkly")
         self.window.title('Camera Recording')
         self.window.geometry('500x400')
-
+        self.window.resizable(False, False)  # make window non resizable
+        
         self.style = ttk.Style()
-        self.style.configure('TLabel', font=('Clam', 12))
-        self.style.configure('TButton', font=('Clam', 12))
-        self.style.configure('TCheckbutton', font=('Clam', 12))
+        self.style.configure('TLabel', font=('Helvetica', 12))
+        self.style.configure('TButton', font=('Helvetica', 12))
+        self.style.configure('TCheckbutton', font=('Helvetica', 12))
         self.initUI()
 
     def initUI(self):
-        main_frame = ttk.Frame(self.window, padding="20 20 20 20")
+        main_frame = ttk.Frame(self.window, padding="20")
         main_frame.pack(fill=BOTH, expand=YES)
 
         # set title
-        title_label = ttk.Label(main_frame, text="Orbbec Data Acquisition", font=('Clam', 18, 'bold'))
-        title_label.pack(pady=(0, 20))
+        title_label = ttk.Label(main_frame, text="MoSeq - Orbbec Data Acquisition", font=('Helvetica', 18, 'bold'))
+        title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
 
         # set subject name
-        subject_frame = ttk.Frame(main_frame)
-        subject_frame.pack(fill=X, pady=5)
-        ttk.Label(subject_frame, text='Subject Name:').pack(side=LEFT)
-        self.subject_input = ttk.Entry(subject_frame, width=30)
-        self.subject_input.pack(side=RIGHT)
+        ttk.Label(main_frame, text='Subject Name:').grid(row=1, column=0, sticky=E, padx=5, pady=5)
+        self.subject_input = ttk.Entry(main_frame, width=30)
+        self.subject_input.grid(row=1, column=1, sticky=W, padx=5, pady=5)
 
-        # set session name
-        session_frame = ttk.Frame(main_frame)
-        session_frame.pack(fill=X, pady=5)
-        ttk.Label(session_frame, text='Session Name:').pack(side=LEFT)
-        self.session_input = ttk.Entry(session_frame, width=30)
-        self.session_input.pack(side=RIGHT)
+        # set sesison name
+        ttk.Label(main_frame, text='Session Name:').grid(row=2, column=0, sticky=E, padx=5, pady=5)
+        self.session_input = ttk.Entry(main_frame, width=30)
+        self.session_input.grid(row=2, column=1, sticky=W, padx=5, pady=5)
 
-        # directory
+        # set directory
+        ttk.Label(main_frame, text='Directory:').grid(row=3, column=0, sticky=E, padx=5, pady=5)
         dir_frame = ttk.Frame(main_frame)
-        dir_frame.pack(fill=X, pady=5)
-        ttk.Label(dir_frame, text='Directory:').pack(side=LEFT)
-        self.dir_input = ttk.Entry(dir_frame, width=30)
-        self.dir_input.pack(side=LEFT, expand=YES, fill=X, padx=(0, 5))
+        dir_frame.grid(row=3, column=1, sticky=W)
+        self.dir_input = ttk.Entry(dir_frame, width=25)
+        self.dir_input.pack(side=LEFT, fill=X, expand=YES)
         dir_button = ttk.Button(dir_frame, text='Browse', command=self.browse_directory, style='Outline.TButton')
-        dir_button.pack(side=RIGHT)
+        dir_button.pack(side=LEFT, padx=(5, 0))
 
-        # set recording length
-        length_frame = ttk.Frame(main_frame)
-        length_frame.pack(fill=X, pady=5)
-        ttk.Label(length_frame, text='Recording Length (minutes):').pack(side=LEFT)
-        self.length_input = ttk.Entry(length_frame, width=10)
+        # recording length
+        ttk.Label(main_frame, text='Recording Length (minutes):').grid(row=4, column=0, sticky=E, padx=5, pady=5)
+        self.length_input = ttk.Entry(main_frame, width=10)
         self.length_input.insert(0, '20')
-        self.length_input.pack(side=RIGHT)
+        self.length_input.grid(row=4, column=1, sticky=W, padx=5, pady=5)
 
         # checkboxes
-        checks_frame = ttk.Frame(main_frame)
-        checks_frame.pack(fill=X, pady=10)
         self.save_ir_var = tk.BooleanVar(value=True)
-        self.save_ir_checkbox = ttk.Checkbutton(checks_frame, text='Save IR', variable=self.save_ir_var, style='TCheckbutton')
-        self.save_ir_checkbox.pack(side=LEFT, padx=(0, 20))
+        self.save_ir_checkbox = ttk.Checkbutton(main_frame, text='Save IR', variable=self.save_ir_var, style='TCheckbutton')
+        self.save_ir_checkbox.grid(row=5, column=0, sticky=W, padx=5, pady=10)
         self.preview_var = tk.BooleanVar(value=True)
-        self.preview_checkbox = ttk.Checkbutton(checks_frame, text='Show Preview', variable=self.preview_var, style='TCheckbutton')
-        self.preview_checkbox.pack(side=LEFT)
+        self.preview_checkbox = ttk.Checkbutton(main_frame, text='Show Preview', variable=self.preview_var, style='TCheckbutton')
+        self.preview_checkbox.grid(row=5, column=1, sticky=W, padx=5, pady=10)
 
         # start button
         start_button = ttk.Button(main_frame, text='Start Recording', command=self.start_recording, style='success.TButton')
-        start_button.pack(pady=20)
+        start_button.grid(row=6, column=0, columnspan=2, pady=20)
 
     def browse_directory(self):
         dir_name = filedialog.askdirectory()
@@ -93,15 +84,15 @@ class App:
             messagebox.showerror("Missing Information", "Please fill in all fields.")
             return
 
-        # Close the window
+        # destroy window
         self.window.destroy()
 
-        # start the recording
+        # start recording
         start_recording(
             base_dir=directory,
             subject_name=subject_name,
             session_name=session_name,
-            recording_length=recording_length * 60,  #convert to seconds
+            recording_length=recording_length * 60,  # Convert to seconds
             save_ir=save_ir,
             display_frames=preview,
             display_time=True,
