@@ -1,7 +1,7 @@
 # moseq-acquire
 Very simple GUI-based MoSeq data acquisition code based on https://github.com/dattalab/orbbec-acquire/
 
-To install and run, please follow the following steps:
+To install and run, please follow the following steps. Note that you will need Ubuntu >= 18.04 to run this.
 
 ## Step 1: Install `git`
 
