@@ -3,7 +3,7 @@ Very simple GUI-based MoSeq data acquisition code based on https://github.com/da
 
 To install and run, please follow the following steps. Note that you will need Ubuntu >= 18.04 to run this.
 
-## Step 1: Install `git`
+## Step 1: Open up your terminal and install `git`
 
 ```bash
 sudo apt update
