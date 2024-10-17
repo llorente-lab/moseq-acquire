@@ -218,6 +218,18 @@ def write_metadata(
 
 
 def write_frames_pyav(filename, frames, fps=30, crf=10, pixel_format='gray', codec='libx264'):
+    """
+    Write frames using PyAV.
+
+    Args:
+
+    filename (str): File to write video to
+    frames (numpy.array): NumPy array representing the frame data
+    fps (int): Video fps
+    crf (int): Constant rate factor that controls the quality of video encoding (lower CRF = higher quality)
+    pixel_format (str): Parameter representing how the images are processed
+    codec (str): Video codec to be encoded in
+    """
     container = av.open(filename, mode='w')
     stream = container.add_stream(codec, rate=fps)
     stream.width = frames.shape[2]
@@ -239,6 +251,15 @@ def write_frames_pyav(filename, frames, fps=30, crf=10, pixel_format='gray', cod
     container.close()
 
 def write_images_pyav(image_queue, filename_prefix, save_ir=True):
+    """
+    Write images with PyAV
+
+    Args:
+
+    image_queue (multiprocessing.queues.Queue): The data stream from the camera
+    filename_prefix (str): Where the images will be written
+    save_ir (bool): Whether to write IR images or not
+    """
     depth_container = av.open(f"{filename_prefix}/depth.avi", mode='w')
     depth_stream = depth_container.add_stream('ffv1', rate=30)
     depth_stream.pix_fmt = 'gray16le'
