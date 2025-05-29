@@ -304,7 +304,7 @@ def start_recording(
     save_ir=True,
     display_frames=True,
     display_time=True,
-    depth_height_threshold=200,
+    depth_height_threshold=150,
 ):
     """
     start recording data.
